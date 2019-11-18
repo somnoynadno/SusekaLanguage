@@ -1,0 +1,49 @@
+<translation_unit> ::= {<statement>}*
+
+<statement> ::= <vardecl> | <if> | <loop> | <assigment> | <comment> | <print>
+
+<vardecl> ::= <type> <variable>
+
+<variable> ::= <name>
+
+<const> ::= <integer>
+
+<assigment> ::= <variable>|<vardecl> = <expression>
+
+<expression> ::= <variable>|<const> {<operator> <variable>|<const>}*
+
+<if> ::= if (<condition>) do {<statement>+} (else {<statement>+})?
+
+<loop> ::= while (<condition>) do {<statement>+}
+
+<condition> ::= <variable>|<const> <comparison_operator> <variable>|<const>
+
+<comment> ::= @@ <character>* @@
+
+<print> ::= <print_function> <variable>|<const>
+
+<print_function> ::= "print"
+
+<operator> ::= "+" | "-" | "/" | "*"
+
+<comaparison_operator> ::= ">" | "<" | "=="
+
+<type> ::= "int" | "bool" | "char"
+
+<name> :: <letter> {<letter> | <digit>}+
+
+<letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" 
+
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
+
+<symbol> ::= "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
+       | "'" | '"' | "=" | "|" | "." | "," | ";" 
+
+<character> ::= <letter> | <digit> | <symbol> | "_" 

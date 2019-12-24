@@ -32,7 +32,7 @@
 
 <comaparison_operator> ::= ">" | "<" | "=="
 
-<boolean_operator> ::= "&&" | "||"
+<binary_operator> ::= "&&" | "||"
 
 <type> ::= "int" | "bool" | "char"
 

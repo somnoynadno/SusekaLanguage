@@ -3,3 +3,4 @@ class Token:
 		self.position = position
 		self.line = line
 		self.content = content
+		self.type = ''

@@ -1,0 +1,19 @@
+int a
+a = 1
+int b
+b = 2
+a = a + b - 2
+print a
+
+bool c
+bool d
+c = true
+d = false
+
+bool e
+e = c && d
+print e
+
+bool f 
+f = c || d
+print f

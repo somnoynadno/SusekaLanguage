@@ -1,10 +1,14 @@
+// TODO: add arrays
+//       add expressions with brackets
+//       add boolean operations
+
 <translation_unit> ::= {<statement>}*
 
 <statement> ::= <vardecl> | <if> | <loop> | <assigment> | <comment> | <print>
 
 <vardecl> ::= <type> <variable>
 
-<variable> ::= <name>
+<variable> ::= <letter> {<letter> | <digit>}+
 
 <const> ::= <integer>
 
@@ -18,7 +22,7 @@
 
 <condition> ::= <variable>|<const> <comparison_operator> <variable>|<const>
 
-<comment> ::= @@ <character>* @@
+<comment> ::= @@ <character>*
 
 <print> ::= <print_function> <variable>|<const>
 
@@ -28,9 +32,11 @@
 
 <comaparison_operator> ::= ">" | "<" | "=="
 
+<boolean_operator> ::= "&&" | "||"
+
 <type> ::= "int" | "bool" | "char"
 
-<name> :: <letter> {<letter> | <digit>}+
+<boolean_type>
 
 <letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "H" | "I" | "J" | "K" | "L" | "M" | "N"

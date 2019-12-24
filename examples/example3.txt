@@ -1,0 +1,29 @@
+int size
+size = 5
+
+char hello[size]
+hello = "Hello"
+
+int nums[size]
+
+int i
+i = 0
+
+while ( i < size ) do {
+	nums[i] = i + 1
+}
+
+char result[20]
+
+i = 0
+while (i < size ) do {
+
+	if ( nums[i] % 2 == 0 ) do {
+		result = nums[i] + hello[i]
+	} else {
+		result = hello[i] + nums[i]
+	}
+
+	print result
+}
+

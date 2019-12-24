@@ -16,19 +16,26 @@ class Lexer:
 	def __init__(self, program):
 		self.program = program
 		self.tokens = []
+		self.DEBUG = False
 
 
 	def run(self):
-		print("Start lexer")
+		if self.DEBUG:
+			print("Start lexer")
 
 		self.split_tokens()
 		self.tokens_analysis()
+		self.structurize_tokens()
 
 
 	def split_tokens(self):
 		line = 1
 		position = 0
 		content = ''
+
+		if self.DEBUG:
+			print("Program:")
+			print(self.program)
 
 		for elem in self.program:
 			if elem == ' ' or elem == '\n':
@@ -68,6 +75,10 @@ class Lexer:
 				token.type = 'BEGIN'
 			elif c == '}':
 				token.type = 'END'
+			elif c == '(':
+				token.type = 'OPEN_BRACKET'
+			elif c == ')':
+				token.type = 'CLOSED_BRACKET'
 			elif c == '<endln>':
 				token.type = 'ENDLN'
 			elif c in DATA_TYPES:
@@ -93,4 +104,29 @@ class Lexer:
 							c, token.line, token.position)
 					raise LexerError(mes)
 
-			print(token.content, token.type)
+			if self.DEBUG:
+				print("Tokens:")
+				print(token.type, token.content)
+
+
+	def structurize_tokens(self):
+		tokens_for_parser = []
+
+		temp = []
+		for token in self.tokens:
+			if token.type == 'ENDLN':
+				# check if not empty
+				if temp:
+					tokens_for_parser.append(temp)
+					temp = []
+			else:
+				temp.append(token)
+
+		self.tokens = tokens_for_parser
+
+		if self.DEBUG:
+			print("Structurize tokens:")
+			for line in self.tokens:
+				for token in line:
+					print(token.type, token.content)
+				print()

@@ -3,9 +3,10 @@ from Parser import Parser
 from SusekaException import *
 
 def main():
-	file = open("examples/example1.txt", 'r').read()
+	file = open("examples/example2.txt", 'r').read()
 
 	lexer = Lexer(file)
+	lexer.DEBUG = True
 	lexer.run()
 
 	parser = Parser(lexer.tokens)

@@ -1,6 +1,7 @@
 // TODO: add arrays
 //       add expressions with brackets
 //       add boolean operations
+//       add char values
 
 <translation_unit> ::= {<statement>}*
 
@@ -28,7 +29,7 @@
 
 <print_function> ::= "print"
 
-<operator> ::= "+" | "-" | "/" | "*"
+<operator> ::= "+" | "-" | "/" | "*" | "%"
 
 <comaparison_operator> ::= ">" | "<" | "=="
 

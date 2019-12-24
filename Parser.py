@@ -1,8 +1,12 @@
 class Parser:
 	def __init__(self, tokens):
 		self.tokens = tokens
+		self.DEBUG = False
 
 	def run(self):
-		print("Start parser")
+		if self.DEBUG:
+			print("Start parser")
 
-		# TODO: here
+		for line in self.tokens:
+			for token in line:
+				pass

@@ -1,3 +1,4 @@
+from SusekaException import *
 from Syntax import *
 
 class Parser:
@@ -16,11 +17,18 @@ class Parser:
 			print("Start parser")
 
 		for line in self.tokens:
+			self.handle_comment(line)
 			self.handle_declaration(line)
 			self.handle_assigment(line)
+			self.handle_print(line)
 
 			if self.error:
 				raise SyntaxError(self.message)
+
+
+	def handle_comment(self, line):
+		if line[0].type == 'COMMENT':
+			return
 
 
 	def handle_declaration(self, line):
@@ -28,7 +36,7 @@ class Parser:
 			try:
 				if line[1].type == 'VARIABLE':
 					# TODO: make declaration
-					return
+					self.commands.append(line)
 				else:
 					self.error = True
 					self.message = "Variable name expected at line {} position {}, meet '{}'".format(
@@ -43,6 +51,11 @@ class Parser:
 			try:
 				if line[1].type == 'EQ':
 					expression = self.handle_expression(line[2:])
+
+					out = []
+					out.append(line[0])
+					out.append(expression)
+					self.commands.append(out)
 
 			except IndexError:
 				self.error = True
@@ -103,5 +116,21 @@ class Parser:
 			print(out)
 
 		return out
+
+
+	def handle_print(self, line):
+		if line[0].type == 'PRINT':
+			if len(line) == 1 or len(line) > 2:
+				self.error = True
+				self.message = "Wrong print sintax at line {}. Correct is 'print <variable>'.".format(
+								line[0].line)
+				return
+			if line[1].type != 'VARIABLE':
+				self.error = True
+				self.message = "Variable expected at line {} position {}".format(
+								line[0].line, line[0].position)
+				return
+
+			self.commands.append(line)
 
 

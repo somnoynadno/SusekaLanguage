@@ -11,13 +11,15 @@ print a
 
 bool c
 bool d
-@@c = true
-@@d = false
+c = true
+d = false
 
-@@bool e
-@@e = c && d
-@@print e
+bool e
+e = ( c && d ) || 0
+print e
 
-@@bool f 
-@@f = c || d
-@@print f
+d = true || false
+
+bool f 
+f = c && ( d || e ) 
+print f

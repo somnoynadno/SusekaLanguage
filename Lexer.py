@@ -36,7 +36,7 @@ class Lexer:
 			if elem == ' ' or elem == '\n':
 				content = content.strip()
 				if content != '':
-					t = Token(position, line, content)
+					t = Token(position - len(content), line, content)
 					content = ''
 					self.tokens.append(t)
 

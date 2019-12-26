@@ -81,6 +81,18 @@ class Parser:
 					self.error = True
 					self.message = "Incorrect number of brackets at line {}".format(elem.line)
 
+			elif elem.content in BINARY_OPERATORS:
+				if not stack:
+					stack.append(elem)
+				else:
+					e = stack[len(stack)-1]
+					if e.content in OPERATORS:
+						stack.pop()
+						stack.append(elem)
+						out.append(e)
+					else:
+						stack.append(elem)
+
 			elif elem.content in OPERATORS:
 				if not stack:
 					stack.append(elem)
@@ -98,7 +110,7 @@ class Parser:
 						stack.append(elem)
 
 			# otherwise it is variable/constant
-			elif elem.type == 'VARIABLE' or elem.type == 'INTEGER_VALUE':
+			elif elem.type == 'VARIABLE' or elem.type == 'INTEGER_VALUE' or elem.type == 'BOOL_VALUE':
 				out.append(elem)
 
 			else:

@@ -2,13 +2,8 @@ import string
 
 from Token import Token
 from SusekaException import *
+from Syntax import *
 
-DATA_TYPES  = ['int', 'bool', 'char']
-BOOL_VALUES = ['true', 'false']
-OPERATORS   = ["+", "-", "/", "*"]
-
-BINARY_OPERATORS     = ["&&", "||"]
-COMPARISON_OPERATORS = [">", "<", "=="]
 
 ASCII_LETTERS = list(string.ascii_letters)
 
@@ -78,7 +73,7 @@ class Lexer:
 			elif c == '(':
 				token.type = 'OPEN_BRACKET'
 			elif c == ')':
-				token.type = 'CLOSED_BRACKET'
+				token.type = 'CLOSE_BRACKET'
 			elif c == '<endln>':
 				token.type = 'ENDLN'
 			elif c in DATA_TYPES:

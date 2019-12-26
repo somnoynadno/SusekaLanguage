@@ -6,15 +6,18 @@ b = 2
 a = a + b - 2
 print a
 
+a = 3 + ( 4 - 1 ) * 5
+print a
+
 bool c
 bool d
-c = true
-d = false
+@@c = true
+@@d = false
 
-bool e
-e = c && d
-print e
+@@bool e
+@@e = c && d
+@@print e
 
-bool f 
-f = c || d
-print f
+@@bool f 
+@@f = c || d
+@@print f

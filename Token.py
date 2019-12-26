@@ -4,3 +4,7 @@ class Token:
 		self.line = line
 		self.content = content
 		self.type = ''
+
+
+	def __repr__(self):
+		return str(self.type + ": " + self.content)

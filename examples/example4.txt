@@ -1,0 +1,13 @@
+int a
+a = 5
+int b
+b = 3
+
+if ( a > b ) do {
+    int if_var
+    if_var = 6
+    if ( if_var == 6 ) do {
+        if_var = if_var + 1
+        print if_var
+    }
+}

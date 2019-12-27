@@ -174,7 +174,8 @@ class Parser:
 						raise SyntaxError(self.message)			
 				else:
 					self.message = "Wrong condition syntax at line {}."
-					raise SyntaxError(self.message)				
+					raise SyntaxError(self.message)	
+			self.commands.append(line)			
 				
 
 	def find_in_line(self, line, type_to_find):

@@ -1,10 +1,6 @@
 from SusekaException import *
 from Syntax import *
 
-class StackElem:
-	def __init__(self, brackets_type, status):
-		self.brackets_type = brackets_type
-		self.status = status
 
 class Variable:
 	def __init__(self, vartype, value):
@@ -29,8 +25,8 @@ class Interpreter:
 
 		for command in self.commands:
 			self.handle_end(command)
-			if len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1].status and self.condition_stack[len(self.condition_stack) - 1].brackets_type == 'IF':
-				self.handle_if(command)
+			self.handle_if(command)
+			if len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]:
 				self.handle_declaration(command)
 				self.handle_assigment(command)
 				self.handle_print(command)
@@ -140,24 +136,32 @@ class Interpreter:
 
 	def handle_if(self, command):
 		if (command[0].type == 'IF'):
-			operator_pos = self.find_in_line(command, 'C_OPERATOR')
+			if (len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]):
+				operator_pos = self.find_in_line(command, 'C_OPERATOR')
 
-			first_exp = command[2:operator_pos]
-			second_exp = command[operator_pos + 1:len(command) - 3]
-			
-			first_res = self.count_expression(first_exp)
-			second_res = self.count_expression(second_exp)
-			res = self.compare(first_res, second_res, command[operator_pos].content)
-			if (res):
-				self.condition_stack.append(StackElem('IF', True))
+				first_exp = command[2:operator_pos]
+				second_exp = command[operator_pos + 1:len(command) - 3]
+				
+				first_res = self.count_expression(first_exp)
+				second_res = self.count_expression(second_exp)
+				res = self.compare(first_res, second_res, command[operator_pos].content)
+				if (res):
+					self.condition_stack.append(True)
+				else:
+					self.condition_stack.append(False)
 			else:
-				self.condition_stack.append(StackElem('IF', False))
+				self.condition_stack.append(False)
+			print(self.condition_stack)
+
+
 	
 	def handle_end(self, command):
 		if (command[0].type == 'END'):
-			self.condition_stack.pop()
+			# print("--------------------------------", self.condition_stack)
+			self.condition_stack.pop() 
+			
 			# if (len(command) > 1):
-			# 	self.else_stack.append(False)
+			# 	self.condition_stack.append(True)
 			
 				
 

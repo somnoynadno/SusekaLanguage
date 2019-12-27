@@ -1,46 +1,52 @@
-<translation_unit> ::= {<statement>}*
+Translation_unit = { Statement }*
 
-<statement> ::= <vardecl> | <if> | <loop> | <assigment> | <comment> | <print>
+Statement = Vardecl | If | Loop | Assigment | Comment | Print
 
-<vardecl> ::= <type> <variable>
+Vardecl = Type Variable
 
-<variable> ::= <letter> {<letter> | <digit>}+ [ ("[" <num> | <variable> "]") ]
+Variable = Letter { Letter | Digit } [ "[" Number | Variable "]" ]
 
-<const> ::= <integer> | <boolean> | <char>
+Const = Integer | BooleanConst | Char
 
-<assigment> ::= <variable> "=" <expression>	
+Assigment = Variable "=" Expression	
 
-<expression> ::= <bracket>(<variable>|<const>|<string>)<bracket> {<operator> <bracket>( <variable> | <const> | <string> )<bracket> }*
+Expression = [OpenBracket] (Variable|Const|String) [CloseBracket] {Operator [OpenBracket] (Variable|Const|String|) [CloseBracket] }
 
-<bracket> ::= [ "(" | ")" ]
+OpenBracket = "("
 
-<if> ::= if (<condition>) do {<statement>+} (else {<statement>+})?
+CloseBracket = ")"
 
-<loop> ::= while (<condition>) do {<statement>+}
+OpenBrace = "{"
 
-<comment> ::= @@ <character>*
+CloseBrace = "}"
 
-<print> ::= <print_function> <variable>|<const>
+If = "if" OpenBracket Condition CloseBracket "do" OpenBrace Statement{Statement}* CloseBrace ["else" OpenBrace Statement{Statement} CloseBrace]
 
-<print_function> ::= "print"
+Loop = "while" (Condition) "do" OpenBrace Statement{Statement} CloseBrace
 
-<operator> ::= "+" | "-" | "/" | "*" | "%"
+Comment = "@@" { Character }
 
-<comaparison_operator> ::= ">" | "<" | "==" | "!="
+Print = Print_function ( Variable | Const )
 
-<boolean_operator> ::= "&&" | "||"
+Print_function = "print"
 
-<boolean_const> ::= "true" | "false"
+Operator = "+" | "-" | "/" | "*" | "%" | "&&" | "||"
 
-<boolean_factor> ::= <boolean_const> | <expression> | <const>
+ComaparisonOperator = ">" | "<" | "==" | "!="
 
-<boolean> ::= <boolean_factor> | <boolean_factor> <comaparison_operator> <boolean_factor>
+BooleanOperator = "&&" | "||"
 
-<condition> ::= <boolean> <boolean_operator> { <boolean> | <condition> }*
+BooleanConst = "true" | "false"
 
-<type> ::= "int" | "bool" | "char"
+BooleanFactor = Boolean_const | Expression | Const
 
-<letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
+Boolean = BooleanFactor | BooleanFactor ComaparisonOperator BooleanFactor
+
+Condition = Boolean { BooleanOperator (Boolean | Condition) }
+
+Type = "int" | "bool" | "char"
+
+Letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "H" | "I" | "J" | "K" | "L" | "M" | "N"
        | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
        | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
@@ -49,19 +55,19 @@
        | "q" | "r" | "s" | "t" | "u" | "v" | "w"
        | "x" | "y" | "z" 
 
-<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
-<sign> := [ + | - ]
+Sign = (+ | -)
 
-<num> ::= <digit> { <digit> }
+Number = Digit { Digit }
 
-<integer> := <sign> <num>
+Integer = [Sign] Number
 
-<symbol> ::= "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
-       | "'" | '"' | "=" | "|" | "." | "," | ";" 
+Symbol = "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
+       | "'" | '"' | "=" | "|" | "." | "," | ";"
 
-<character> ::= <letter> | <digit> | <symbol> | "_"
+Character = Letter | Digit | Symbol |
 
-<char> ::= "'" <character> "'"
+Char = "'" Character "'"
 
-<string> := """ <character> { <character> } """
+String = """ { Character } """

@@ -6,7 +6,7 @@ b = 2
 a = a + b - 2
 print a
 
-a = 3 + ( 4 - 1 ) * 5
+a = 3 + ( 4 - 1 ) * 5 + 5 % 2
 print a
 
 bool c
@@ -19,6 +19,11 @@ e = ( c && d ) || 0
 print e
 
 d = true || false
+
+a = true + true + true
+print a
+c = true + true + true
+print c
 
 bool f 
 f = c && ( d || e ) 

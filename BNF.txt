@@ -1,27 +1,22 @@
-// TODO: add arrays
-//       add expressions with brackets
-//       add boolean operations
-//       add char values
-
 <translation_unit> ::= {<statement>}*
 
 <statement> ::= <vardecl> | <if> | <loop> | <assigment> | <comment> | <print>
 
 <vardecl> ::= <type> <variable>
 
-<variable> ::= <letter> {<letter> | <digit>}+
+<variable> ::= <letter> {<letter> | <digit>}+ [ ("[" <num> | <variable> "]") ]
 
-<const> ::= <integer>
+<const> ::= <integer> | <boolean> | <char>
 
-<assigment> ::= <variable>|<vardecl> = <expression>
+<assigment> ::= <variable> "=" <expression>	
 
-<expression> ::= <variable>|<const> {<operator> <variable>|<const>}*
+<expression> ::= <bracket>(<variable>|<const>|<string>)<bracket> {<operator> <bracket>( <variable> | <const> | <string> )<bracket> }*
+
+<bracket> ::= [ "(" | ")" ]
 
 <if> ::= if (<condition>) do {<statement>+} (else {<statement>+})?
 
 <loop> ::= while (<condition>) do {<statement>+}
-
-<condition> ::= <variable>|<const> <comparison_operator> <variable>|<const>
 
 <comment> ::= @@ <character>*
 
@@ -31,13 +26,19 @@
 
 <operator> ::= "+" | "-" | "/" | "*" | "%"
 
-<comaparison_operator> ::= ">" | "<" | "=="
+<comaparison_operator> ::= ">" | "<" | "==" | "!="
 
-<binary_operator> ::= "&&" | "||"
+<boolean_operator> ::= "&&" | "||"
+
+<boolean_const> ::= "true" | "false"
+
+<boolean_factor> ::= <boolean_const> | <expression> | <const>
+
+<boolean> ::= <boolean_factor> | <boolean_factor> <comaparison_operator> <boolean_factor>
+
+<condition> ::= <boolean> <boolean_operator> { <boolean> | <condition> }*
 
 <type> ::= "int" | "bool" | "char"
-
-<boolean_type>
 
 <letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G"
        | "H" | "I" | "J" | "K" | "L" | "M" | "N"
@@ -48,9 +49,19 @@
        | "q" | "r" | "s" | "t" | "u" | "v" | "w"
        | "x" | "y" | "z" 
 
-<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" 
+<digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<sign> := [ + | - ]
+
+<num> ::= <digit> { <digit> }
+
+<integer> := <sign> <num>
 
 <symbol> ::= "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
        | "'" | '"' | "=" | "|" | "." | "," | ";" 
 
-<character> ::= <letter> | <digit> | <symbol> | "_" 
+<character> ::= <letter> | <digit> | <symbol> | "_"
+
+<char> ::= "'" <character> "'"
+
+<string> := """ <character> { <character> } """

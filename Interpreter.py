@@ -86,8 +86,13 @@ class Interpreter:
 				else:
 					stack.append(True)
 			elif elem.type == 'OPERATOR' or elem.type == 'B_OPERATOR':
-				e1 = stack.pop()
-				e2 = stack.pop()
+				try:
+					e1 = stack.pop()
+					e2 = stack.pop()
+				except IndexError:
+					self.error = True
+					self.message = "Invalid expression at line {}".format(
+									elem.line)
 
 				if elem.content == '-':
 					stack.append(e2 - e1)

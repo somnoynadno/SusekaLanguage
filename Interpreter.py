@@ -26,7 +26,7 @@ class Interpreter:
 		for command in self.commands:
 			self.handle_end(command)
 			self.handle_if(command)
-			if len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]:
+			if len(self.condition_stack) == 0 or self.check_condition_stack():
 				self.handle_declaration(command)
 				self.handle_assigment(command)
 				self.handle_print(command)
@@ -136,7 +136,11 @@ class Interpreter:
 
 	def handle_if(self, command):
 		if (command[0].type == 'IF'):
-			if (len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]):
+			if (len(self.condition_stack) == 0 or self.check_condition_stack()):
+				# Короче, тема такая: мы отмечаем любые скобки в condition stack. даже те, которые 
+				# находятся в if (False){ if(){} <- вот эти скобки тоже отмечаем }
+				# Ну и соответственно, отмечаем их за ложные скобки, чтобы интерпритатор не выполнял действия внитри них 
+				# хотя я еще подумаю, мб просто делать проверку на то, что если тип есть хоть один False в стеке, то не выполняется ничего
 				operator_pos = self.find_in_line(command, 'C_OPERATOR')
 
 				first_exp = command[2:operator_pos]
@@ -151,17 +155,17 @@ class Interpreter:
 					self.condition_stack.append(False)
 			else:
 				self.condition_stack.append(False)
-			print(self.condition_stack)
 
 
 	
 	def handle_end(self, command):
 		if (command[0].type == 'END'):
-			# print("--------------------------------", self.condition_stack)
-			self.condition_stack.pop() 
-			
-			# if (len(command) > 1):
-			# 	self.condition_stack.append(True)
+			condition = self.condition_stack.pop() 
+			if (len(command) > 1 and condition == False and self.check_condition_stack()):
+				print ("ELSE STATEMENT")
+				self.condition_stack.append(True)
+			elif (len(command) > 1 and (condition != False or self.check_condition_stack() == False)):
+				self.condition_stack.append(False)
 			
 				
 
@@ -184,3 +188,8 @@ class Interpreter:
 		for i in range(len(line)):
 			if (line[i].type == type_to_find):
 				return i
+	def check_condition_stack(self):
+		for i in self.condition_stack:
+			if (i == False):
+				return False
+		return True

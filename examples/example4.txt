@@ -2,12 +2,29 @@ int a
 a = 5
 int b
 b = 3
+print b
 
-if ( a > b ) do {
+if ( 5 > 3 ) do {
     int if_var
     if_var = 6
-    if ( if_var == 6 ) do {
+    if ( if_var != 6 ) do {
         if_var = if_var + 1
         print if_var
+        @@ if_var = 7
+    } else {
+        if_var = 0 - if_var
+        print if_var
+        @@ if_var = -6
     }
+    int g
+    g = 1
+    print g
+} else {
+    int f
+    f = -2
+    print f
 }
+int c
+c = 10
+print c
+int d

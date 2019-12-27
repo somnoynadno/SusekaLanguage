@@ -25,8 +25,8 @@ class Interpreter:
 
 		for command in self.commands:
 			self.handle_end(command)
-			if len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]:
-				self.handle_if(command)
+			self.handle_if(command)
+			if len(self.condition_stack) == 0 or self.check_condition_stack():
 				self.handle_declaration(command)
 				self.handle_assigment(command)
 				self.handle_print(command)
@@ -136,22 +136,43 @@ class Interpreter:
 
 	def handle_if(self, command):
 		if (command[0].type == 'IF'):
-			operator_pos = self.find_in_line(command, 'C_OPERATOR')
+			if (len(self.condition_stack) == 0 or self.check_condition_stack()):
+				# Короче, тема такая: мы отмечаем любые скобки в condition stack. даже те, которые 
+				# находятся в if (False){ if(){} <- вот эти скобки тоже отмечаем }
+				# НО выполняем все, смотря на весь стек. если есть в стеке хоть один False
+				# То ничего не выполняем. Но стек продолжаем забивать содержимым,
+				# если видим if или else, а также удалять из стека, когда видим }
+				operator_pos = self.find_in_line(command, 'C_OPERATOR')
 
-			first_exp = command[2:operator_pos]
-			second_exp = command[operator_pos + 1:len(command) - 3]
-			
-			first_res = self.count_expression(first_exp)
-			second_res = self.count_expression(second_exp)
-			res = self.compare(first_res, second_res, command[operator_pos].content)
-			if (res):
-				self.condition_stack.append(True)
+				first_exp = command[2:operator_pos]
+				second_exp = command[operator_pos + 1:len(command) - 3]
+				
+				first_res = self.count_expression(first_exp)
+				second_res = self.count_expression(second_exp)
+				res = self.compare(first_res, second_res, command[operator_pos].content)
+				if (res):
+					self.condition_stack.append(True)
+				else:
+					self.condition_stack.append(False)
 			else:
 				self.condition_stack.append(False)
+
+
 	
 	def handle_end(self, command):
 		if (command[0].type == 'END'):
-			self.condition_stack.pop()
+			condition = self.condition_stack.pop() 
+
+			# если есть else, то стек в любом случае забивется true или false
+			# если предыдущее условие было ложным, но при этом мы находимся в if(true), то идем в else
+			# ну и соответственно добавляем True
+			if (len(command) > 1 and condition == False and self.check_condition_stack()):
+				print ("ELSE STATEMENT")
+				self.condition_stack.append(True)
+			elif (len(command) > 1 and (condition or self.check_condition_stack() == False)):
+				# Ну а если предыдущее условие давало True или мы находимся в if(false), то в else не идем
+				self.condition_stack.append(False)
+			
 				
 
 	def compare(self, first, second, operator):
@@ -173,3 +194,8 @@ class Interpreter:
 		for i in range(len(line)):
 			if (line[i].type == type_to_find):
 				return i
+	def check_condition_stack(self):
+		for i in self.condition_stack:
+			if (i == False):
+				return False
+		return True

@@ -1,3 +1,4 @@
+import re
 import string
 
 from Token import Token
@@ -6,6 +7,9 @@ from Syntax import *
 
 
 ASCII_LETTERS = list(string.ascii_letters)
+
+array_regexp = r'^\w+\[\w+\]$'
+integer_regexp = r'^-?\d*$'
 
 class Lexer:
 	def __init__(self, program):
@@ -88,16 +92,16 @@ class Lexer:
 				token.type = 'C_OPERATOR'
 			elif c.startswith('@@'):
 				token.type = 'COMMENT'
+			elif re.findall(array_regexp, c):
+				token.type = 'ARRAY_VARIABLE'
 			elif c[0] in ASCII_LETTERS:
 				token.type = 'VARIABLE'
+			elif re.findall(integer_regexp, c):
+				token.type = 'INTEGER_VALUE'
 			else:
-				try:
-					c = int(c)
-					token.type = 'INTEGER_VALUE'
-				except ValueError:
-					mes = "Unexpected token '{}' at line {} position {}".format(
-							c, token.line, token.position)
-					raise LexerError(mes)
+				mes = "Unexpected token '{}' at line {} position {}".format(
+						c, token.line, token.position)
+				raise LexerError(mes)
 
 			if self.DEBUG:
 				print("Tokens:")
@@ -122,6 +126,5 @@ class Lexer:
 		if self.DEBUG:
 			print("Structurize tokens:")
 			for line in self.tokens:
-				for token in line:
-					print(token.type, token.content)
+				print(line)
 				print()

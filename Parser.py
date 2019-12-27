@@ -5,8 +5,6 @@ class Parser:
 	def __init__(self, tokens):
 		self.tokens = tokens
 		self.DEBUG = False
-
-		self.error = False
 		self.message = ''
 
 		self.commands = []
@@ -22,9 +20,6 @@ class Parser:
 			self.handle_assigment(line)
 			self.handle_print(line)
 
-			if self.error:
-				raise SyntaxError(self.message)
-
 
 	def handle_comment(self, line):
 		if line[0].type == 'COMMENT':
@@ -35,15 +30,15 @@ class Parser:
 		if line[0].type == 'DATA_TYPE':
 			try:
 				if line[1].type == 'VARIABLE':
-					# TODO: make declaration
 					self.commands.append(line)
 				else:
-					self.error = True
 					self.message = "Variable name expected at line {} position {}, meet '{}'".format(
 									line[1].line, line[1].position, line[1].content)
+					raise SyntaxError(self.message)
+
 			except IndexError:
-				self.error = True
 				self.message = "Wrong syntax at line {}".format(line[0].line)
+				raise SyntaxError(self.message)
 
 
 	def handle_assigment(self, line):
@@ -58,8 +53,8 @@ class Parser:
 					self.commands.append(out)
 
 			except IndexError:
-				self.error = True
 				self.message = "Assigment expected at line {}".format(line[0].line)
+				raise SyntaxError(self.message)
 
 
 	def handle_expression(self, line):
@@ -78,8 +73,8 @@ class Parser:
 						else:
 							out.append(e)
 				except IndexError:
-					self.error = True
 					self.message = "Incorrect number of brackets at line {}".format(elem.line)
+					raise SyntaxError(self.message)
 
 			elif elem.content in BINARY_OPERATORS:
 				if not stack:
@@ -114,10 +109,9 @@ class Parser:
 				out.append(elem)
 
 			else:
-				self.error = True
 				self.message = "Unexpected expression at line {} position {}".format(
 					elem.line, elem.position)
-				return
+				raise SyntaxError(self.message)
 
 		while stack:
 			e = stack.pop()
@@ -133,15 +127,13 @@ class Parser:
 	def handle_print(self, line):
 		if line[0].type == 'PRINT':
 			if len(line) == 1 or len(line) > 2:
-				self.error = True
 				self.message = "Wrong print sintax at line {}. Correct is 'print <variable>'.".format(
 								line[0].line)
-				return
+				raise SyntaxError(self.message)
 			if line[1].type != 'VARIABLE':
-				self.error = True
 				self.message = "Variable expected at line {} position {}".format(
 								line[0].line, line[0].position)
-				return
+				raise SyntaxError(self.message)
 
 			self.commands.append(line)
 

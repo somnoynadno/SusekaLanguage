@@ -16,7 +16,7 @@ while ( i < size ) do {
 char result[20]
 
 i = 0
-while (i < size ) do {
+while ( i < size ) do {
 
 	if ( nums[i] % 2 == 0 ) do {
 		result = nums[i] + hello[i]

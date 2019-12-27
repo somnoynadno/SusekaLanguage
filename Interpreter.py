@@ -25,6 +25,7 @@ class Interpreter:
 			self.handle_declaration(command)
 			self.handle_assigment(command)
 			self.handle_print(command)
+			self.handle_if(command)
 
 
 	def handle_declaration(self, command):
@@ -128,3 +129,36 @@ class Interpreter:
 				raise RuntimeError(self.message)
 			else:
 				print(var + ": " + str(self.variables[var].value))
+
+	def handle_if(self, command):
+		if (command[0].type == 'IF'):
+			operator_pos = self.find_in_line(command, 'C_OPERATOR')
+
+			first_exp = command[2:operator_pos]
+			second_exp = command[operator_pos + 1:len(command) - 3]
+
+			first_res = self.count_expression(first_exp)
+			second_res = self.count_expression(second_exp)
+			res = self.compare(first_res, second_res, command[operator_pos].content)
+			print(res)
+				
+
+	def compare(self, first, second, operator):
+		if (operator == '=='):
+			if (first == second):
+				return True
+		elif (operator == '>'):
+			if (first > second):
+				return True
+		elif (operator == '<'):
+			if (first < second):
+				return True
+		elif (operator == '!='):
+			if (first != second):
+				return True
+		return False
+
+	def find_in_line(self, line, type_to_find):
+		for i in range(len(line)):
+			if (line[i].type == type_to_find):
+				return i

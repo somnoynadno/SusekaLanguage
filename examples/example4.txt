@@ -1,4 +1,9 @@
-if ( 5 == 5 ) do {
+int a
+a = 5
+int b
+b = 3
+
+if ( a > b ) do {
     int if_var
     if_var = 6
     if ( if_var == 6 ) do {

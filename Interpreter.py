@@ -27,15 +27,20 @@ class Interpreter:
 
 		self.variables = {}
 
+		self.condition_stack = []
+
 
 	def run(self):
 		if self.DEBUG:
 			print("Start interpreter")
 
 		for command in self.commands:
-			self.handle_declaration(command)
-			self.handle_assigment(command)
-			self.handle_print(command)
+			self.handle_end(command)
+			self.handle_if(command)
+			if len(self.condition_stack) == 0 or self.check_condition_stack():
+				self.handle_declaration(command)
+				self.handle_assigment(command)
+				self.handle_print(command)
 
 		if self.DEBUG:
 			print("Variable table")
@@ -119,8 +124,7 @@ class Interpreter:
 			if elem.type == 'VARIABLE':
 				var = elem.content
 				if self.variables.get(var) == None:
-					self.message = "Variable '{}' is not defined (line {})".format(
-									var, command[0].line)
+					self.message = "Variable '{}' is not defined (line {})"
 					raise RuntimeError(self.message)
 
 				stack.append(self.variables[var].value)
@@ -262,6 +266,9 @@ class Interpreter:
 								array_index, token.line)
 				raise RuntimeError(self.message)
 			else:
+				print(var + ": " + str(self.variables[var].value))
+        
+        
 				if self.variables.get(array_index).vartype != 'int':
 					self.message = "Variable '{}' must be integer (line {})".format(
 									array_index, token.line)
@@ -283,3 +290,69 @@ class Interpreter:
 			raise RuntimeError(self.message)
 
 		return value
+
+	def handle_if(self, command):
+		if (command[0].type == 'IF'):
+			if (len(self.condition_stack) == 0 or self.check_condition_stack()):
+				# Короче, тема такая: мы отмечаем любые скобки в condition stack. даже те, которые 
+				# находятся в if (False){ if(){} <- вот эти скобки тоже отмечаем }
+				# НО выполняем все, смотря на весь стек. если есть в стеке хоть один False
+				# То ничего не выполняем. Но стек продолжаем забивать содержимым,
+				# если видим if или else, а также удалять из стека, когда видим }
+				operator_pos = self.find_in_line(command, 'C_OPERATOR')
+
+				first_exp = command[2:operator_pos]
+				second_exp = command[operator_pos + 1:len(command) - 3]
+				
+				first_res = self.count_expression(first_exp)
+				second_res = self.count_expression(second_exp)
+				res = self.compare(first_res, second_res, command[operator_pos].content)
+				if (res):
+					self.condition_stack.append(True)
+				else:
+					self.condition_stack.append(False)
+			else:
+				self.condition_stack.append(False)
+
+
+	
+	def handle_end(self, command):
+		if (command[0].type == 'END'):
+			condition = self.condition_stack.pop() 
+
+			# если есть else, то стек в любом случае забивется true или false
+			# если предыдущее условие было ложным, но при этом мы находимся в if(true), то идем в else
+			# ну и соответственно добавляем True
+			if (len(command) > 1 and condition == False and self.check_condition_stack()):
+				print ("ELSE STATEMENT")
+				self.condition_stack.append(True)
+			elif (len(command) > 1 and (condition or self.check_condition_stack() == False)):
+				# Ну а если предыдущее условие давало True или мы находимся в if(false), то в else не идем
+				self.condition_stack.append(False)
+			
+				
+
+	def compare(self, first, second, operator):
+		if (operator == '=='):
+			if (first == second):
+				return True
+		elif (operator == '>'):
+			if (first > second):
+				return True
+		elif (operator == '<'):
+			if (first < second):
+				return True
+		elif (operator == '!='):
+			if (first != second):
+				return True
+		return False
+
+	def find_in_line(self, line, type_to_find):
+		for i in range(len(line)):
+			if (line[i].type == type_to_find):
+				return i
+	def check_condition_stack(self):
+		for i in self.condition_stack:
+			if (i == False):
+				return False
+		return True

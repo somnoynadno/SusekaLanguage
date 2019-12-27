@@ -19,6 +19,8 @@ class Parser:
 			self.handle_declaration(line)
 			self.handle_assigment(line)
 			self.handle_print(line)
+			self.handle_if(line)
+			self.handle_end_else(line)
 
 		if self.DEBUG:
 			print("Commands:")
@@ -137,7 +139,7 @@ class Parser:
 	def handle_print(self, line):
 		if line[0].type == 'PRINT':
 			if len(line) == 1 or len(line) > 2:
-				self.message = "Wrong print sintax at line {}. Correct is 'print <variable>'.".format(
+				self.message = "Wrong print syntax at line {}. Correct is 'print <variable>'.".format(
 								line[0].line)
 				raise SyntaxError(self.message)
 			if line[1].type != 'VARIABLE' and line[1].type != 'ARRAY_VARIABLE':
@@ -146,5 +148,50 @@ class Parser:
 				raise SyntaxError(self.message)
 
 			self.commands.append(line)
+
+	def handle_if(self, line):
+		if (line[0].type == 'IF'):
+			print(line)
+			if line[1].type != 'OPEN_BRACKET':
+				self.message = "Wrong condition syntax at line {}."
+				raise SyntaxError(self.message)
+			if (line[len(line) - 1].type != 'BEGIN'):
+				self.message = "Wrong condition syntax at line {}."
+				raise SyntaxError(self.message)
+			if (line[len(line) - 2].type != 'DO'):
+				self.message = "Wrong condition syntax at line {}."
+				raise SyntaxError(self.message)
+			if (line[len(line) - 3].type != 'CLOSE_BRACKET'):
+				self.message = "Wrong condition syntax at line {}."
+				raise SyntaxError(self.message)
+			operator_pos = self.find_in_line(line, 'C_OPERATOR')
+			first_expression = line[2:operator_pos]
+			second_expression = line[operator_pos + 1:len(line) - 3]
+
+			first_exp_res = self.handle_expression(first_expression)
+			second_exp_res = self.handle_expression(second_expression)
+
+			line[2:operator_pos] = first_exp_res
+			line[operator_pos + 1:len(line) - 3] = second_exp_res
+
+			self.commands.append(line)
+	def handle_end_else(self, line):
+		if line[0].type == 'END':
+			if (len(line) > 1):
+				if (line[1].type == 'else'):
+					if (line[2].type != 'BEGIN'):
+						self.message = "Wrong condition syntax at line {}."
+						raise SyntaxError(self.message)			
+				else:
+					self.message = "Wrong condition syntax at line {}."
+					raise SyntaxError(self.message)	
+			self.commands.append(line)			
+				
+
+	def find_in_line(self, line, type_to_find):
+		for i in range(len(line)):
+			if (line[i].type == type_to_find):
+				return i
+			
 
 

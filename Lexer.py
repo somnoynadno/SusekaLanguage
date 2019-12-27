@@ -9,7 +9,7 @@ from Syntax import *
 ASCII_LETTERS = list(string.ascii_letters)
 
 array_regexp = r'^\w+\[\w+\]$'
-integer_regexp = r'^-?\d*$'
+integer_regexp = r'^-?\d+$'
 
 class Lexer:
 	def __init__(self, program):

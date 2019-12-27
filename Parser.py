@@ -20,6 +20,9 @@ class Parser:
 			self.handle_assigment(line)
 			self.handle_print(line)
 
+		if self.DEBUG:
+			print("Commands:")
+			print(self.commands)
 
 	def handle_comment(self, line):
 		if line[0].type == 'COMMENT':
@@ -29,7 +32,7 @@ class Parser:
 	def handle_declaration(self, line):
 		if line[0].type == 'DATA_TYPE':
 			try:
-				if line[1].type == 'VARIABLE':
+				if line[1].type == 'VARIABLE' or line[1].type == 'ARRAY_VARIABLE':
 					self.commands.append(line)
 				else:
 					self.message = "Variable name expected at line {} position {}, meet '{}'".format(
@@ -115,6 +118,10 @@ class Parser:
 
 		while stack:
 			e = stack.pop()
+			if e.type == 'OPEN_BRACKET':
+				self.message = "Wrong number of brackets at line {}".format(
+					e.line)
+				raise SyntaxError(self.message)
 			out.append(e)
 
 		if self.DEBUG:
@@ -130,7 +137,7 @@ class Parser:
 				self.message = "Wrong print sintax at line {}. Correct is 'print <variable>'.".format(
 								line[0].line)
 				raise SyntaxError(self.message)
-			if line[1].type != 'VARIABLE':
+			if line[1].type != 'VARIABLE' and line[1].type != 'ARRAY_VARIABLE':
 				self.message = "Variable expected at line {} position {}".format(
 								line[0].line, line[0].position)
 				raise SyntaxError(self.message)

@@ -139,8 +139,9 @@ class Interpreter:
 			if (len(self.condition_stack) == 0 or self.check_condition_stack()):
 				# Короче, тема такая: мы отмечаем любые скобки в condition stack. даже те, которые 
 				# находятся в if (False){ if(){} <- вот эти скобки тоже отмечаем }
-				# Ну и соответственно, отмечаем их за ложные скобки, чтобы интерпритатор не выполнял действия внитри них 
-				# хотя я еще подумаю, мб просто делать проверку на то, что если тип есть хоть один False в стеке, то не выполняется ничего
+				# НО выполняем все, смотря на весь стек. если есть в стеке хоть один False
+				# То ничего не выполняем. Но стек продолжаем забивать содержимым,
+				# если видим if или else, а также удалять из стека, когда видим }
 				operator_pos = self.find_in_line(command, 'C_OPERATOR')
 
 				first_exp = command[2:operator_pos]
@@ -161,10 +162,15 @@ class Interpreter:
 	def handle_end(self, command):
 		if (command[0].type == 'END'):
 			condition = self.condition_stack.pop() 
+
+			# если есть else, то стек в любом случае забивется true или false
+			# если предыдущее условие было ложным, но при этом мы находимся в if(true), то идем в else
+			# ну и соответственно добавляем True
 			if (len(command) > 1 and condition == False and self.check_condition_stack()):
 				print ("ELSE STATEMENT")
 				self.condition_stack.append(True)
-			elif (len(command) > 1 and (condition != False or self.check_condition_stack() == False)):
+			elif (len(command) > 1 and (condition or self.check_condition_stack() == False)):
+				# Ну а если предыдущее условие давало True или мы находимся в if(false), то в else не идем
 				self.condition_stack.append(False)
 			
 				

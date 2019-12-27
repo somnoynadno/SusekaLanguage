@@ -16,31 +16,35 @@ class Interpreter:
 
 		self.variables = {}
 
+		self.condition_stack = []
+
 
 	def run(self):
 		if self.DEBUG:
 			print("Start interpreter")
 
 		for command in self.commands:
-			self.handle_declaration(command)
-			self.handle_assigment(command)
-			self.handle_print(command)
 			self.handle_if(command)
+			if len(self.condition_stack) == 0 or self.condition_stack[len(self.condition_stack) - 1]:
+				self.handle_declaration(command)
+				self.handle_assigment(command)
+				self.handle_print(command)
 
 
 	def handle_declaration(self, command):
-		if command[0].type == 'DATA_TYPE':
-			var     = command[1].content
-			vartype = command[0].content
+			if command[0].type == 'DATA_TYPE':
+				var     = command[1].content
+				vartype = command[0].content
 
-			if self.variables.get(var) != None:
-				self.message = "Variable '{}' already declared (line {})".format(
-								var, command[0].line)
-				raise RuntimeError(self.message)
+				if self.variables.get(var) != None:
+					self.message = "Variable '{}' already declared (line {})".format(
+									var, command[0].line)
+					raise RuntimeError(self.message)
 
-			else:
-				v = Variable(vartype, None)
-				self.variables[var] = v
+				else:
+					v = Variable(vartype, None)
+					self.variables[var] = v
+
 
 
 	def handle_assigment(self, command):
@@ -69,8 +73,7 @@ class Interpreter:
 			if elem.type == 'VARIABLE':
 				var = elem.content
 				if self.variables.get(var) == None:
-					self.message = "Variable '{}' is not defined (line {})".format(
-									var, command[0].line)
+					self.message = "Variable '{}' is not defined (line {})"
 					raise RuntimeError(self.message)
 
 				stack.append(self.variables[var].value)
@@ -140,7 +143,12 @@ class Interpreter:
 			first_res = self.count_expression(first_exp)
 			second_res = self.count_expression(second_exp)
 			res = self.compare(first_res, second_res, command[operator_pos].content)
-			print(res)
+			if (res):
+				self.condition_stack.append(True)
+			else:
+				self.condition_stack.append(False)
+		if (command[0].type == 'END'):
+			self.condition_stack.pop()
 				
 
 	def compare(self, first, second, operator):

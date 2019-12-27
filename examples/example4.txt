@@ -1,3 +1,8 @@
-if ( 4 == 3 ) do {
-
+if ( 5 == 5 ) do {
+    int if_var
+    if_var = 6
+    if ( if_var == 6 ) do {
+        if_var = if_var + 1
+        print if_var
+    }
 }

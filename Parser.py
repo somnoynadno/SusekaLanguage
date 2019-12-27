@@ -20,6 +20,7 @@ class Parser:
 			self.handle_assigment(line)
 			self.handle_print(line)
 			self.handle_if(line)
+			self.handle_end_else(line)
 
 
 	def handle_comment(self, line):
@@ -164,6 +165,17 @@ class Parser:
 			line[operator_pos + 1:len(line) - 3] = second_exp_res
 
 			self.commands.append(line)
+	def handle_end_else(self, line):
+		if line[0].type == 'END':
+			if (len(line) > 1):
+				if (line[1].type == 'else'):
+					if (line[2].type != 'BEGIN'):
+						self.message = "Wrong condition syntax at line {}."
+						raise SyntaxError(self.message)			
+				else:
+					self.message = "Wrong condition syntax at line {}."
+					raise SyntaxError(self.message)				
+				
 
 	def find_in_line(self, line, type_to_find):
 		for i in range(len(line)):

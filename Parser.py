@@ -22,7 +22,10 @@ class Parser:
 
 		if self.DEBUG:
 			print("Commands:")
-			print(self.commands)
+			for command in self.commands:
+				print(command)
+				print()
+				
 
 	def handle_comment(self, line):
 		if line[0].type == 'COMMENT':
@@ -45,7 +48,7 @@ class Parser:
 
 
 	def handle_assigment(self, line):
-		if line[0].type == 'VARIABLE':
+		if line[0].type == 'VARIABLE' or line[0].type == 'ARRAY_VARIABLE':
 			try:
 				if line[1].type == 'EQ':
 					expression = self.handle_expression(line[2:])
@@ -108,7 +111,7 @@ class Parser:
 						stack.append(elem)
 
 			# otherwise it is variable/constant
-			elif elem.type == 'VARIABLE' or elem.type == 'INTEGER_VALUE' or elem.type == 'BOOL_VALUE':
+			elif elem.type == 'VARIABLE' or elem.type == 'INTEGER_VALUE' or elem.type == 'BOOL_VALUE' or elem.type == 'ARRAY_VARIABLE':
 				out.append(elem)
 
 			else:

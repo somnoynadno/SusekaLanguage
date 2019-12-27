@@ -8,13 +8,17 @@ a[2] = 3
 a[3] = 2
 a[4] = 4 + 1
 
+print a
+
 int i
 int j
 int temp
 
 i = 1
-print a[0]
-print a[i]
+a[i] = i
+
+print a
+print a
 
 @@i = size
 @@while ( i > 0 ) do {

@@ -5,18 +5,18 @@ from SusekaException import *
 
 
 def main():
-	file = open("examples/example4.txt", 'r').read()
+	file = open("examples/example2.txt", 'r').read()
 
 	lexer = Lexer(file)
-	lexer.DEBUG = True
+	# lexer.DEBUG = True
 	lexer.run()
 
 	parser = Parser(lexer.tokens)
-	parser.DEBUG = True
+	# parser.DEBUG = True
 	parser.run()
 
 	interpreter = Interpreter(parser.commands)
-	interpreter.DEBUG = True
+	# interpreter.DEBUG = True
 	interpreter.run()
 
 

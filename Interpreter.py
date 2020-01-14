@@ -18,10 +18,10 @@ class Variable:
 		return str(self.vartype) + ': ' + str(self.value)
 
 
-# TODO: refactoring =)
 class Interpreter:
 	def __init__(self, commands):
 		self.commands = commands
+		self.current_command_pos = 0
 		self.DEBUG = False
 		self.message = ''
 
@@ -29,18 +29,31 @@ class Interpreter:
 
 		self.condition_stack = []
 
+		self.while_pointers_stack = []
+
 
 	def run(self):
 		if self.DEBUG:
 			print("Start interpreter")
 
-		for command in self.commands:
+		while self.current_command_pos < len(self.commands):
+			command = self.commands[self.current_command_pos]
+
 			self.handle_end(command)
 			self.handle_if(command)
+
 			if len(self.condition_stack) == 0 or self.check_condition_stack():
 				self.handle_declaration(command)
 				self.handle_assigment(command)
 				self.handle_print(command)
+				self.handle_endwhile(command)
+				self.handle_while(command)
+
+			self.current_command_pos += 1
+
+			if self.DEBUG:
+				print('while pointers stack:')
+				print(self.while_pointers_stack)
 
 		if self.DEBUG:
 			print("Variable table")
@@ -119,7 +132,7 @@ class Interpreter:
 		stack = []
 		for elem in expression:
 			if elem.type == 'ARRAY_VARIABLE':
-				v = get_array_value(elem)
+				v = self.get_array_value(elem)
 				stack.append(v)
 			if elem.type == 'VARIABLE':
 				var = elem.content
@@ -266,7 +279,7 @@ class Interpreter:
 								array_index, token.line)
 				raise RuntimeError(self.message)
 			else:
-				print(var + ": " + str(self.variables[var].value))
+				# print(array_name + ": " + str(self.variables[array_name].value))
         
         
 				if self.variables.get(array_index).vartype != 'int':
@@ -291,6 +304,7 @@ class Interpreter:
 
 		return value
 
+
 	def handle_if(self, command):
 		if (command[0].type == 'IF'):
 			if (len(self.condition_stack) == 0 or self.check_condition_stack()):
@@ -314,7 +328,6 @@ class Interpreter:
 			else:
 				self.condition_stack.append(False)
 
-
 	
 	def handle_end(self, command):
 		if (command[0].type == 'END'):
@@ -330,7 +343,6 @@ class Interpreter:
 				# Ну а если предыдущее условие давало True или мы находимся в if(false), то в else не идем
 				self.condition_stack.append(False)
 			
-				
 
 	def compare(self, first, second, operator):
 		if (operator == '=='):
@@ -347,12 +359,58 @@ class Interpreter:
 				return True
 		return False
 
+
 	def find_in_line(self, line, type_to_find):
 		for i in range(len(line)):
 			if (line[i].type == type_to_find):
 				return i
+
+
 	def check_condition_stack(self):
 		for i in self.condition_stack:
 			if (i == False):
 				return False
 		return True
+
+
+	def handle_while(self, command):
+		if (command[0].type == 'WHILE'):
+
+			operator_pos = self.find_in_line(command, 'C_OPERATOR')
+
+			first_exp = command[2:operator_pos]
+			second_exp = command[operator_pos + 1:len(command) - 3]
+			
+			first_res = self.count_expression(first_exp)
+			second_res = self.count_expression(second_exp)
+
+			res = self.compare(first_res, second_res, command[operator_pos].content)
+
+			if res:
+				# just remember the cycle position
+				self.while_pointers_stack.append(self.current_command_pos)
+			else:
+				# pass lines until 'endwhile' not found
+				while True:
+					self.current_command_pos += 1
+
+					if self.current_command_pos >= len(self.commands):
+						self.message = "'}endwhile' expected, but not found"
+						raise RuntimeError(self.message)
+
+					command = self.commands[self.current_command_pos]
+
+					if command[0].type == 'ENDWHILE':
+						break
+
+
+	def handle_endwhile(self, command):
+		if command[0].type == 'ENDWHILE':
+			# get previous line position, because it will be incremented in next operation
+			try:
+				self.current_command_pos = self.while_pointers_stack.pop() - 1
+			except IndexError:
+				if self.DEBUG:
+					print('empty while pointer stack')
+				return
+				

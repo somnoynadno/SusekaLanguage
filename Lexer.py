@@ -74,6 +74,8 @@ class Lexer:
 				token.type = 'BEGIN'
 			elif c == '}':
 				token.type = 'END'
+			elif c == '}endwhile':
+				token.type = 'ENDWHILE'
 			elif c == '(':
 				token.type = 'OPEN_BRACKET'
 			elif c == ')':

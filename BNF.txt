@@ -20,9 +20,11 @@ OpenBrace = "{"
 
 CloseBrace = "}"
 
+EndWhile = "}endwhile"
+
 If = "if" OpenBracket Condition CloseBracket "do" OpenBrace Statement{Statement}* CloseBrace ["else" OpenBrace Statement{Statement} CloseBrace]
 
-Loop = "while" (Condition) "do" OpenBrace Statement{Statement} CloseBrace
+Loop = "while" (Condition) "do" OpenBrace Statement{Statement} EndWhile
 
 Comment = "@@" { Character }
 

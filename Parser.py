@@ -55,12 +55,17 @@ class Parser:
 		if line[0].type == 'VARIABLE' or line[0].type == 'ARRAY_VARIABLE':
 			try:
 				if line[1].type == 'EQ':
-					expression = self.handle_expression(line[2:])
+					if line[2].type == 'STRING':
+						# work with string in interpreter
+						self.commands.append([line[0], line[2]])
+					else:
+						# else represent expression in postfix form
+						expression = self.handle_expression(line[2:])
 
-					out = []
-					out.append(line[0])
-					out.append(expression)
-					self.commands.append(out)
+						out = []
+						out.append(line[0])
+						out.append(expression)
+						self.commands.append(out)
 
 			except IndexError:
 				self.message = "Assigment expected at line {}".format(line[0].line)
@@ -115,7 +120,7 @@ class Parser:
 						stack.append(elem)
 
 			# otherwise it is variable/constant
-			elif elem.type == 'VARIABLE' or elem.type == 'INTEGER_VALUE' or elem.type == 'BOOL_VALUE' or elem.type == 'ARRAY_VARIABLE':
+			elif elem.type in ['VARIABLE', 'INTEGER_VALUE', 'BOOL_VALUE', 'ARRAY_VARIABLE', 'CHAR_VALUE']:
 				out.append(elem)
 
 			else:
@@ -154,7 +159,10 @@ class Parser:
 
 	def handle_if(self, line):
 		if (line[0].type == 'IF'):
-			print(line)
+			if self.DEBUG:
+				print("PRINT statement:")
+				print(line)
+				
 			if line[1].type != 'OPEN_BRACKET':
 				self.message = "Wrong condition syntax at line {}."
 				raise SyntaxError(self.message)

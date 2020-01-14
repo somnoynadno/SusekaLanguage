@@ -8,8 +8,10 @@ from Syntax import *
 
 ASCII_LETTERS = list(string.ascii_letters)
 
-array_regexp = r'^\w+\[\w+\]$'
+array_regexp   = r'^\w+\[\w+\]$'
 integer_regexp = r'^-?\d+$'
+char_regexp    = r"^'\w'$"
+string_regexp  = r'^"\w*"$'
 
 class Lexer:
 	def __init__(self, program):
@@ -100,6 +102,10 @@ class Lexer:
 				token.type = 'VARIABLE'
 			elif re.findall(integer_regexp, c):
 				token.type = 'INTEGER_VALUE'
+			elif re.findall(char_regexp, c):
+				token.type = 'CHAR_VALUE'
+			elif re.findall(string_regexp, c):
+				token.type = 'STRING'
 			else:
 				mes = "Unexpected token '{}' at line {} position {}".format(
 						c, token.line, token.position)

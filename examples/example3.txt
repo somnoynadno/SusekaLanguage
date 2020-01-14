@@ -11,9 +11,10 @@ i = 0
 
 while ( i < size ) do {
 	nums[i] = i + 1
-}
+	i = i + 1
+}endwhile
 
-char result[20]
+char result[2]
 
 i = 0
 while ( i < size ) do {
@@ -24,6 +25,7 @@ while ( i < size ) do {
 		result = hello[i] + nums[i]
 	}
 
+	i = i + 1
 	print result
-}
+}endwhile
 

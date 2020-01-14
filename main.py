@@ -5,7 +5,7 @@ from SusekaException import *
 
 
 def main():
-	file = open("examples/example2.txt", 'r').read()
+	file = open("examples/example3.txt", 'r').read()
 
 	lexer = Lexer(file)
 	# lexer.DEBUG = True

@@ -76,12 +76,25 @@ class Interpreter:
 								var, command[0].line)
 				raise RuntimeError(self.message)
 
-			value = self.count_expression(command[1])
-			
-			if self.variables[var].vartype == 'bool':
-				self.variables[var].value = bool(value)
+			if type(command[1]) != type([]):
+				if command[1].type == 'STRING':
+					self.handle_string_assigment(command)
+				else:
+					self.message = "Unexpected token at line {}".format(command[0].line)
+					raise RuntimeError(self.message)
 			else:
-				self.variables[var].value = int(value)
+				value = self.count_expression(command[1])
+
+				if self.variables[var].vartype == 'bool':
+					self.variables[var].value = bool(value)
+				if self.variables[var].vartype == 'array':
+					if self.variables[var].value[0].vartype == 'char':
+						for i, elem in enumerate(value):
+							self.variables[var].value[i] = Variable('char', elem)
+					else:
+						self.message = "Array {} must be type of char (line {})".format(var, command[0].line)
+				else:
+					self.variables[var].value = int(value)
 
 		elif command[0].type == 'ARRAY_VARIABLE':
 			arr_var = command[0].content
@@ -109,7 +122,6 @@ class Interpreter:
 
 					array_index = self.variables.get(array_index).value
 
-			
 			if self.variables.get(array_name) == None:
 				self.message = "Array '{}' is not declared (line {})".format(
 								array_name, command[0].line)
@@ -160,7 +172,10 @@ class Interpreter:
 				if elem.content == '-':
 					stack.append(e2 - e1)
 				elif elem.content == '+':
-					stack.append(e2 + e1)
+					if type(e2) == type('') or type(e1) == type(''):
+						stack.append(str(e2) + str(e1))
+					else:
+						stack.append(e2 + e1)
 				elif elem.content == '*':
 					stack.append(e2 * e1)
 				elif elem.content == '/':
@@ -296,6 +311,8 @@ class Interpreter:
 			raise RuntimeError(self.message)
 
 		try:
+			if self.DEBUG:
+				print(self.variables.get(array_name))
 			value = self.variables.get(array_name).value[array_index].value
 		except IndexError:
 			self.message = "Index is out of range (line {})".format(
@@ -337,7 +354,8 @@ class Interpreter:
 			# если предыдущее условие было ложным, но при этом мы находимся в if(true), то идем в else
 			# ну и соответственно добавляем True
 			if (len(command) > 1 and condition == False and self.check_condition_stack()):
-				print ("ELSE STATEMENT")
+				if self.DEBUG:
+					print ("ELSE STATEMENT")
 				self.condition_stack.append(True)
 			elif (len(command) > 1 and (condition or self.check_condition_stack() == False)):
 				# Ну а если предыдущее условие давало True или мы находимся в if(false), то в else не идем
@@ -414,3 +432,24 @@ class Interpreter:
 					print('empty while pointer stack')
 				return
 				
+
+	def handle_string_assigment(self, command):
+		var = self.variables.get(command[0].content)
+
+		if var.vartype != 'array':
+			self.message = "Variable {} should be declared as array (line {})".format
+			raise RuntimeError(self.message)
+
+		if var.value[0].vartype != 'char':
+			self.message = "Variable must be type of 'char' at line {}".format(command[0].line)
+			raise RuntimeError(self.message)
+
+		# remove brackets
+		string = command[1].content[1:len(command[1].content)-1]
+
+		for i, elem in enumerate(string):
+			var.value[i] = Variable('char', elem)
+
+		if self.DEBUG:
+			print("Parsed string:")
+			print(var)

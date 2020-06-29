@@ -7,6 +7,10 @@ Poor language for poor developers
 - Non-strict explicit static typing
 - Whitespaces between all operands
 
+## Usage
+
+``` $ python3 main.py <filename> ```
+
 ## Examples
 
 Examples stored in "example" folder

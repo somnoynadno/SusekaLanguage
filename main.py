@@ -1,11 +1,21 @@
+#!/usr/bin/env python3
+
 from Interpreter import Interpreter
 from Lexer import Lexer
 from Parser import Parser
 from SusekaException import *
 
+from sys import argv
+
 
 def main():
-	file = open("examples/example3.txt", 'r').read()
+	try:
+		filename = argv[1]
+	except IndexError:
+		print("Usage: python3 main.py <filename>")
+		exit(1)
+
+	file = open(filename, 'r').read()
 
 	lexer = Lexer(file)
 	# lexer.DEBUG = True
